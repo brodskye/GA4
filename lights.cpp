@@ -15,8 +15,8 @@ using namespace std;
 
 typedef struct _light
 {
-int state;
-vector <int> Switches;
+	int state;
+	vector <int> Switches;
 }Light;
 
 
@@ -26,7 +26,7 @@ int main()
 	char getter[10000];
 	char Switches[1000];
 	char Lights[1000];
-	
+
 	//Open the file
 	FILE* fp;
 	fp = fopen("input.txt", "rb");
@@ -39,131 +39,160 @@ int main()
 
 	strcpy(Switches, strtok(getter, ","));
 	strcpy(Lights, strtok(NULL, "\n"));
-	
+
 	int Switch_num = atoi(Switches);
 	int Light_num = atoi(Lights);
 
 	cout << "Lights: " << Light_num << " Switches: " << Switch_num << endl;
 
-//This is the 2d array for the switches 
-	int Switch_arr[Switch_num-1][20];
+	//This is the 2d array for the switches 
+	int Switch_arr[Switch_num - 1][20];
 
-//I had to make this grab huge for the 3rd test or it seg faults
+	//I had to make this grab huge for the 3rd test or it seg faults
 	fgets(getter, 100000, fp);
 
-//Array to hold light on and off values
+	//Array to hold light on and off values
 	int light_arr[Light_num];
 
-//Do this so you can run the NULL value in the next for loop for strtok, don't ask me why it needs this but it works lol.
+	//Do this so you can run the NULL value in the next for loop for strtok, don't ask me why it needs this but it works lol.
 	strcpy(pch, strtok(getter, ","));
 	light_arr[0] = atoi(pch);
 
-//Here I am filling the light array up with the on and off values of each light
-	for(int i =1; i<Light_num; i++)
+	//Here I am filling the light array up with the on and off values of each light
+	for (int i = 1; i<Light_num; i++)
 	{
 		strcpy(pch, strtok(NULL, ","));
 		light_arr[i] = atoi(pch);
 	}
 
-//Here I am setting each number in the first column to the switch number
-	for(int i = 0; i<Switch_num; i++)
+	//Here I am setting each number in the first column to the switch number
+	for (int i = 0; i<Switch_num; i++)
 	{
-		Switch_arr[0][i] = i+1;
+		Switch_arr[0][i] = i + 1;
 	}
 
 	//Here is where I am filling out the 2d array of switches and all of the connections for each switch.
-	for(int j = 0; j<Switch_num; j++)
+	for (int j = 0; j<Switch_num; j++)
 	{
 		int i = 0;
 		fgets(getter, 1000, fp);
-		char *tok =	strcpy(pch, strtok(getter, ","));
+		char *tok = strcpy(pch, strtok(getter, ","));
 		Switch_arr[j][i] = atoi(pch);
 		i++;
-		while(tok != NULL)
+		while (tok != NULL)
 		{
 			strcpy(pch, tok);
 			tok = strtok(NULL, ",");
 			Switch_arr[j][i] = atoi(pch);
 			i++;
-			if(tok == NULL)
+			if (tok == NULL)
 			{
-			Switch_arr[j][i] = -1;
+				Switch_arr[j][i] = -1;
 			}
 		}
 
 	}
 
-//Use this to print the 2d array that holds each switch and its connections.
+	//Use this to print the 2d array that holds each switch and its connections.
 
-/*for(int j = 0; j <Switch_num; j++)
-{
+	/*for(int j = 0; j <Switch_num; j++)
+	{
 	int i = 0;
 	while(Switch_arr[j][i] != -1)
 	{
-		cout << Switch_arr[j][i] << " ";
-		i++;
+	cout << Switch_arr[j][i] << " ";
+	i++;
 	}
 	cout << endl;
-}
-*/
-
-
-
-	
-	
-//Allocating memory for the lights
-Light* new_L = new Light[Light_num];
-
-int L;
-
-//Add the connected switches to each of the lights	
-for(int j = 0; j < Switch_num; j++)
-{
-	int l = 1;
-	while(Switch_arr[j][l] != -1)
-	{
-	L = Switch_arr[j][l];
-	new_L[L-1].Switches.push_back(j+1);
-	l++;
 	}
-}
-
-//This Vector holds each of the lights
-vector<Light> Vec_L;
-
-//Function to give each light its state, it also fills the vector that holds the lights.
-for(int p = 0; p < Light_num; p++)
-{
-	new_L[p].state = light_arr[p];
-	Vec_L.push_back(new_L[p]);
-}
+	*/
 
 
 
 
 
+	//Allocating memory for the lights
+	Light* new_L = new Light[Light_num];
+
+	int L;
+
+	//Add the connected switches to each of the lights	
+	for (int j = 0; j < Switch_num; j++)
+	{
+		int l = 1;
+		while (Switch_arr[j][l] != -1)
+		{
+			L = Switch_arr[j][l];
+			new_L[L - 1].Switches.push_back(j + 1);
+			l++;
+		}
+	}
+
+	//This Vector holds each of the lights
+	vector<Light> Vec_L;
+
+	//Function to give each light its state, it also fills the vector that holds the lights.
+	for (int p = 0; p < Light_num; p++)
+	{
+		new_L[p].state = light_arr[p];
+		Vec_L.push_back(new_L[p]);
+	}
+
+	vector<int> a;
+	vector<int> b;
+	for (int i = 0; i < Vec_L.size(); i++) {
+		if (Vec_L.at(i).state == 0) {
+			a.push_back(Vec_L.at(i).Switches.at(0)*-1);
+			a.push_back(Vec_L.at(i).Switches.at(0));
+			b.push_back(Vec_L.at(i).Switches.at(1));
+			b.push_back(Vec_L.at(i).Switches.at(1)*-1);
+		}
+		else if (Vec_L.at(i).state == 1) {
+			a.push_back(Vec_L.at(i).Switches.at(0));
+			a.push_back(Vec_L.at(i).Switches.at(0)*-1);
+			b.push_back(Vec_L.at(i).Switches.at(1));
+			b.push_back(Vec_L.at(i).Switches.at(1)*-1);
+
+		}
+	}
+	int numClauses = Light_num * 2;
+	vector<pair<int, int> > test;
+	for (int i = 0; i < numClauses; i++) {
+		test.push_back(make_pair(a.at(i), b.at(i)));
+	}
+	string sResult;
+	int result = satisfiable(test);
+	cout << "Actual: " << result << endl;
+	if (result == 1) {
+		sResult = "yes";
+	}
+	else if (result == 0) {
+		sResult = "no";
+	}
+	test.clear();
 
 
 
-//Use this to print the vector that hold each lights connections
 
-/*
-for(int f = 0; f < Light_num; f++)
-{
-for(vector<int>::const_iterator i = new_L[f].Switches.begin(); i != new_L[f].Switches.end(); i++)
-{
+
+	//Use this to print the vector that hold each lights connections
+
+	/*
+	for(int f = 0; f < Light_num; f++)
+	{
+	for(vector<int>::const_iterator i = new_L[f].Switches.begin(); i != new_L[f].Switches.end(); i++)
+	{
 	cout << *i << " ";
 
-}
-cout << endl;
-}
-*/
+	}
+	cout << endl;
+	}
+	*/
+	FILE* fd = fopen("output.txt", "w");
+	fprintf(fd, "%s\n", sResult.c_str());
+	fclose(fd);
+	fclose(fp);
 
-
-fclose(fp);
-
-
-	
-return 0;
+	return 0;
 }
 
